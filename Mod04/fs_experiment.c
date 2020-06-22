@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <math.h>
 
 #define PATH_NTFS "/media/wallacemanzano/NTFS"
 #define PATH_FAT  "/media/wallacemanzano/FAT"
@@ -69,6 +70,8 @@ void printResults(float ***results, int n) {
 void printMean(float **results[REP][3], int n) {
 	printf("\n\n\n");
 	float mean[3][3][7];
+	float sum[3][3][7];
+	float std[3][3][7];
 	for(int i = 0; i < 3; i++) {
 		for(int j = 0; j < 3; j++) {
 
@@ -77,7 +80,20 @@ void printMean(float **results[REP][3], int n) {
 				for(int v = 0; v < n; v++) {
 					mean[i][j][k] += results[v][i][j][k];
 				}
+				sum[i][j][k] += mean[i][j][k];
 				mean[i][j][k] /= n;
+			}
+		}
+	}
+	for(int i = 0; i < 3; i++) {
+		for(int j = 0; j < 3; j++) {
+
+			for(int k = 0; k < 7; k++) {
+				std[i][j][k] = 0;
+				for(int v = 0; v < n; v++) {
+					std[i][j][k] += pow(results[v][i][j][k] - mean[i][j][k], 2);
+				}
+				std[i][j][k] = sqrt(std[i][j][k]/REP);
 			}
 		}
 	}
@@ -90,9 +106,14 @@ void printMean(float **results[REP][3], int n) {
 		printf("\n==========================\n");
 		for(int j = 0; j < 3; j++) {
 
-			printf("%s\n", (j == 0) ? "create" : ((j == 1) ? "read" : "delete"));
+			printf("\n%s\n", (j == 0) ? "create" : ((j == 1) ? "read" : "delete"));
+			printf("Mean\n");
 			for(int k = 0; k < 7; k++) {
 				printf("%fsec ", mean[i][j][k]);
+			}
+			printf("\nStandard deviation\n");
+			for(int k = 0; k < 7; k++) {
+				printf("%fsec ", std[i][j][k]);
 			}
 			printf("\n");
 			// free(results[i][j]);
