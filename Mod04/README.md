@@ -1,5 +1,5 @@
 Para a compilação do código, utilizar o comando 
-`gcc -o experiment fs_experiment.c`
+`gcc -o experiment fs_experiment.c -lm`
 
 No arquivo fs_experiment.c há 4 constants
 ```
